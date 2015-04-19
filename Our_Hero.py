@@ -1,6 +1,6 @@
 class Our_Hero:
 
-    def __init__(self, name, title, health = 100, mana = 50, mana_regeneration_rate = 2):
+    def __init__(self, name, title, health = 20, mana = 50, mana_regeneration_rate = 2):
         self.name = name
         self.title = title
         self.health = health
@@ -44,9 +44,9 @@ class Our_Hero:
 
 
 hero = Our_Hero("Gayster", "GaySlayer")
-print(hero.known_as())
+#print(hero.known_as())
 hero.take_damage(50)
 hero.take_healing(60)
-print(hero.health)
+#print(hero.health)
 
 
