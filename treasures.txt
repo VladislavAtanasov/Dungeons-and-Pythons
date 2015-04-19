@@ -1,0 +1,4 @@
+{"mana":[10,15,20,30],
+"health":[10,12,17,23],
+"weapon":[Weapon("Axe", 20), Weapon("Water_sword", 40)],
+"spell":[Spell("low_level", 10), Spell("strong", 30)]}
