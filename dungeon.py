@@ -14,9 +14,13 @@ class Dungeon:
         self.hero = Hero("Gayster", "GaySlayer", 50, 20)
         self.treasures = {"mana": [10, 15, 20, 30],
                             "health": [10, 12, 17, 23],
-                            "weapon": [Weapon("Axe", 20), Weapon("Water_sword", 40)],
+                            "weapon": [Weapon("Axe", 20), Weapon("Water sword", 40)],
                             "spell": [Spell("low_level", 10, 20, 1), Spell("strong", 30, 70, 6)]
                             }
+        self.random_treasure = None
+        self.random_spell = None
+        self.random_health = None
+        self.random_mana = None
 
     def __str__(self):
         return "S.##.....T\n#T##..###.\n#.###E###E\n#.E...###.\n###T#####G"
@@ -44,33 +48,59 @@ class Dungeon:
                     if e == "S":
                         self.position[self.position.index(elem)][elem.index(e)] = "H"
 
-    '''def swap(self):
-        for c in self.position:
-                for e in c:
-                    self.position[self.position.index(c) - 1][c.index(e)] = "H"
-                    self.position[self.position.index(c)][c.index(e)] = "."'''
+    def take_mana_when_moving(self):
+        if self.hero.mana + self.hero.mana_regeneration_rate <= 50:
+            #self.hero.mana += self.hero.mana_regeneration_rate
+            self.hero.take_mana(self.hero.mana_regeneration_rate)
+
+    def pick_treasure(self):
+        random_treasure = random.choice(self.treasures.keys())
+        if random_treasure == "health":
+            self.random_health = random.choice(self.treasures["health"])
+            if self.hero.health + self.random_health <= 100:
+                self.hero.health += self.random_health
+                return "Found health potion. Hero health increased by {}.".format(str(self.random_health))
+            else:
+                return "Found health potion. Hero health is max."
+        elif random_treasure == "mana":
+            self.random_mana = random.choice(self.treasures["mana"])
+            if self.hero.mana + self.random_mana <= 50:
+                self.hero.mana += self.random_mana
+                return "Found mana poton. Hero mana increased by {}.".format(str(self.random_mana))
+            else:
+                return "Found mana potion. Hero mana is max."
+        elif random_treasure == "weapon":
+            self.random_weapon = random.choice(self.treasures["weapon"])
+            self.hero.equip(self.random_weapon)
+            return "Found weapon. Hero equipped with {}. Weapon damage is {}".format(self.hero.weapon.name, self.hero.weapon.damage)
+        elif random_treasure == "spell":
+            self.random_spell = random.choice(self.treasures["spell"])
+            self.hero.learn(self.random_spell)
+            return "Found spell. Hero learnt spell named {}. Spell damage is {}".format(self.hero.spell.name, self.hero.spell.damage)
 
     def move_hero(self, direction):
         if direction not in ["up", "down", "left", "right"]:
             raise ValueError("Invalid direction")
+
         if direction == "up":
             for elem in self.position:
                 for e in elem:
                     if e == "H":
-                        #needed_index = elem.index(e)
                         if self.position.index(elem) - 1 >= 0:
                             if self.position[self.position.index(elem) - 1][elem.index(e)] == ".":
                                 self.position[self.position.index(elem) - 1][elem.index(e)] = "H"
                                 self.position[self.position.index(elem)][elem.index(e)] = "."
-                                if self.hero.mana + self.hero.mana_regeneration_rate <= 50:
-                                    self.hero.mana += self.hero.mana_regeneration_rate
+                                self.take_mana_when_moving()
                                 return True
                             elif self.position[self.position.index(elem) - 1][elem.index(e)] == "#":
                                 return False
                             elif self.position[self.position.index(elem) - 1][elem.index(e)] == "T":
-                                pass
+                                self.position[self.position.index(elem) - 1][elem.index(e)] = "H"
+                                self.position[self.position.index(elem)][elem.index(e)] = "."
+                                self.take_mana_when_moving()
+                                return self.pick_treasure()
                             elif self.position[self.position.index(elem) - 1][elem.index(e)] == "E":
-                                pass
+                                return "Enemy found"
                         else:
                             return "Game over"
 
@@ -78,20 +108,21 @@ class Dungeon:
             for elem in self.position:
                 for e in elem:
                     if e == "H":
-                        #needed_index = elem.index(e)
                         if self.position.index(elem) + 1 <= len(self.position) - 1:
                             if self.position[self.position.index(elem) + 1][elem.index(e)] == ".":
                                 self.position[self.position.index(elem) + 1][elem.index(e)] = "H"
                                 self.position[self.position.index(elem)][elem.index(e)] = "."
-                                if self.hero.mana + self.hero.mana_regeneration_rate <= 50:
-                                    self.hero.mana += self.hero.mana_regeneration_rate
+                                self.take_mana_when_moving()
                                 return True
                             elif self.position[self.position.index(elem) + 1][elem.index(e)] == "#":
                                 return False
                             elif self.position[self.position.index(elem) + 1][elem.index(e)] == "T":
-                                pass
+                                self.position[self.position.index(elem) + 1][elem.index(e)] = "H"
+                                self.position[self.position.index(elem)][elem.index(e)] = "."
+                                self.take_mana_when_moving()
+                                return self.pick_treasure()
                             elif self.position[self.position.index(elem) + 1][elem.index(e)] == "E":
-                                pass
+                                return "Enemy found"
                         else:
                             return "Game over"
 
@@ -99,37 +130,21 @@ class Dungeon:
             for elem in self.position:
                 for e in elem:
                     if e == "H":
-                        #needed_index = elem.index(e)
                         if elem.index(e) + 1 <= len(elem) - 1:
                             if self.position[self.position.index(elem)][elem.index(e) + 1] == ".":
                                 self.position[self.position.index(elem)][elem.index(e) + 1] = "H"
                                 self.position[self.position.index(elem)][elem.index(e)] = "."
-                                if self.hero.mana + self.hero.mana_regeneration_rate <= 50:
-                                    self.hero.mana += self.hero.mana_regeneration_rate
+                                self.take_mana_when_moving()
                                 return True
                             elif self.position[self.position.index(elem)][elem.index(e) + 1] == "#":
                                 return False
                             elif self.position[self.position.index(elem)][elem.index(e) + 1] == "T":
-                                random_treasure = random.choice(self.treasures.keys())
-                                if random_treasure == "health":
-                                    random_health = random.choice(self.treasures["health"])
-                                    if self.hero.health + random_health <= 100:
-                                        self.hero.health += random_health
-                                elif random_treasure == "mana":
-                                    random_mana = random.choice(self.treasures["mana"])
-                                    if self.hero.mana + random_mana <= 50:
-                                        self.hero.mana += random_mana
-                                elif random_treasure == "weapon":
-                                    random_weapon = random.choice(self.treasures["weapon"])
-                                    self.hero.equip(self.random_weapon)
-                                elif random_treasure == "spell":
-                                    random_spell = random.choice(self.treasures["spell"])
-                                    self.hero.learn(self.random_spell)
                                 self.position[self.position.index(elem)][elem.index(e) + 1] = "H"
                                 self.position[self.position.index(elem)][elem.index(e)] = "."
-                                return True
+                                self.take_mana_when_moving()
+                                return self.pick_treasure()
                             elif self.position[self.position.index(elem)][elem.index(e) + 1] == "E":
-                                pass
+                                return "Enemy found"
                         else:
                             return "Game over"
 
@@ -137,25 +152,31 @@ class Dungeon:
             for elem in self.position:
                 for e in elem:
                     if e == "H":
-                        #needed_index = elem.index(e)
                         if elem.index(e) - 1 >= 0:
                             if self.position[self.position.index(elem)][elem.index(e) - 1] == ".":
                                 self.position[self.position.index(elem)][elem.index(e) - 1] = "H"
                                 self.position[self.position.index(elem)][elem.index(e) + 1] = "."
-                                if self.hero.mana + self.hero.mana_regeneration_rate <= 50:
-                                    self.hero.mana += self.hero.mana_regeneration_rate
+                                self.take_mana_when_moving()
                                 return True
                             elif self.position[self.position.index(elem)][elem.index(e) - 1] == "#":
                                 return False
                             elif self.position[self.position.index(elem)][elem.index(e) - 1] == "T":
-                                pass
+                                self.position[self.position.index(elem)][elem.index(e) - 1] = "H"
+                                self.position[self.position.index(elem)][elem.index(e) + 1] = "."
+                                self.take_mana_when_moving()
+                                return self.pick_treasure()
                             elif self.position[self.position.index(elem)][elem.index(e) - 1] == "E":
-                                pass
-
+                                return "Enemy found"
                         else:
                             return "Game over"
 
-
+    def hero_attack(self, by=None):
+        if by == "weapon":
+            return self.hero.weapon != None
+            return "weapon"
+        if by == "spell":
+            return self.hero.spell != None
+            return "spell"
 
 
 
@@ -165,8 +186,12 @@ print(s.print_map())
 print(s.position)
 s.spawn(s.hero)
 print(s.print_map())
+#print(s.move_hero("up"))
+print(s.move_hero("down"))
 #print(s.move_hero("left"))
-print(s.move_hero("right"))
+#print(s.move_hero("right"))
 print(s.print_map())
 print(s.hero.mana)
 print(s.hero.health)
+print(s.hero_attack(by="spell"))
+print(s.hero_attack(by="weapon"))
