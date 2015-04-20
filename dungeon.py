@@ -1,21 +1,20 @@
-from Our_Hero import Our_Hero
+from Our_Hero import Our_Hero, Spell, Weapon
 from random import *
 
 class Dungeon:
 
     def __init__(self, file_name):
-        #self.place = [["S",".","#","#",".",".",".",".",".","T"],
-        #                ["#", "T", "#","#", ".", ".", "#", "#", "#","."],
-        #                ["#",".","#","#","#","E","#","#","#","E"],
-        #                ["#",".","E", ".", ".", ".", "#","#","#", "."],
-        #                ["#","#","#","T", "#","#","#","#","G"]
-        #                ]
-        #self.pos_obst = [self.place.index(self.place[self.place.index(elem)][elem.index(x)]) for elem in self.place for x in elem if self.place[self.place.index(elem)][elem.index(x)] == '.']
+
         opened = open(file_name, "r")
         self.my_file = opened.read().split("\n")
         self.list = [lis for lis in self.my_file if lis.strip() != ""]
         self.place = [[elem for elem in x] for x in self.list]
         opened.close()
+        self.treasures_list = {
+                                "mana":[10,15,20,30],
+                                "health":[10,12,17,23],
+                                "weapon":[Weapon("Axe", 20), Weapon("Water_sword", 40)],
+                                "spell":[Spell("low_level", 10, 20, 1), Spell("strong", 30, 70, 6)]}
         self.hero = Our_Hero("Gayster", "GaySlayer")
 
     def spawn(self, hero):
@@ -48,6 +47,8 @@ class Dungeon:
                                 if self.place[self.place.index(elem) - 1][elem.index("H")] == "E":
                                     pass
                                 if self.place[self.place.index(elem) - 1][elem.index("H")] == "T":
+                                    self.place[self.place.index(elem) - 1][elem.index("H")] = "H"
+                                    self.place[self.place.index(elem)][elem.index("H")] = "."
                                     return self.pick_treasure()
                             else:
                                 return False
@@ -65,6 +66,8 @@ class Dungeon:
                                 if self.place[self.place.index(elem) + 1][elem.index("H")] == "E":
                                     pass
                                 if self.place[self.place.index(elem) + 1][elem.index("H")] == "T":
+                                    self.place[self.place.index(elem) + 1][elem.index("H")] = "H"
+                                    self.place[self.place.index(elem)][elem.index("H")] = "."
                                     return self.pick_treasure()
                             else:
                                 return False
@@ -82,6 +85,8 @@ class Dungeon:
                                 if self.place[self.place.index(elem)][elem.index("H") + 1] == "E":
                                     pass
                                 if self.place[self.place.index(elem)][elem.index("H") + 1] == "T":
+                                    self.place[self.place.index(elem)][elem.index("H") + 1] = "H"
+                                    self.place[self.place.index(elem)][elem.index("H")] = "."
                                     return self.pick_treasure()
                             else:
                                 return False
@@ -99,6 +104,8 @@ class Dungeon:
                                 if self.place[self.place.index(elem)][elem.index("H") - 1] == "E":
                                     pass
                                 if self.place[self.place.index(elem)][elem.index("H") - 1] == "T":
+                                    self.place[self.place.index(elem)][elem.index("H") - 1] = "H"
+                                    self.place[self.place.index(elem)][elem.index("H") + 1] = "."
                                     return self.pick_treasure()
                             else:
                                 return False
@@ -112,16 +119,17 @@ class Dungeon:
         treasures.close()
         random_treasure = choice(range(0,len(list_treasures)))
         if list_treasures[random_treasure] == "Health Potion":
-            self.hero.take_healing(40)
+            random_health = choice(self.treasures_list["health"])
+            self.hero.take_healing(random_health)
         elif list_treasures[random_treasure] == "Mana":
-            pass
-            #self.hero.take_mana()
+            random_mana = choice(self.treasures_list["mana"])
+            self.hero.take_mana(random_mana)
         elif list_treasures[random_treasure] == "Weapon":
-            pass
-            #self.hero.equip(weapon)
+            random_weapon = choice(self.treasures_list["weapon"])
+            self.hero.equip(random_weapon)
         elif list_treasures[random_treasure] == "Spell":
-            pass
-            #self.hero.learn(spell)
+            random_spell = choice(self.treasures_list["spell"])
+            self.hero.learn(random_spell)
         return "Found Treasure: {}".format(list_treasures[random_treasure])
 
     def print_map(self):

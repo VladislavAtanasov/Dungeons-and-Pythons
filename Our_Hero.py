@@ -1,3 +1,26 @@
+class Weapon:
+
+    def __init__(self, name, damage):
+        self.name = name
+        self.damage = damage
+
+    def get_weapon_damage(self):
+        return self.damage
+
+class Spell:
+
+    def __init__(self, name, damage, mana_cost, cast_range):
+        self.name = name
+        self.damage = damage
+        self.mana_cost = mana_cost
+        self.cast_range = cast_range
+
+    def get_spell_damage(self):
+        return self.damage
+
+    def get_mana_cost(self):
+        return self.mana_cost
+
 class Our_Hero:
 
     def __init__(self, name, title, health = 20, mana = 50, mana_regeneration_rate = 2):
@@ -6,6 +29,8 @@ class Our_Hero:
         self.health = health
         self.mana = mana
         self. mana_regeneration_rate = mana_regeneration_rate
+        self.weapon = None
+        self.spell = None
 
     def known_as(self):
         message = "{} the {}"
@@ -41,12 +66,28 @@ class Our_Hero:
         else:
             self.health = 100
 
+    def take_mana(self, mana_points=0):
+        if self.mana + mana_points <= 50:
+            self.mana += mana_points
+
+    def equip(self, weapon):
+        self.weapon = weapon
+
+    def learn(self, spell):
+        self.spell = spell
+
+    def attack(self, by=''):
+        if by == "weapon":
+            return self.weapon.get_weapon_damage()
+        elif by == "spell":
+            return self.spell.get_spell_damage()
+        else:
+            return 0
+
 
 
 hero = Our_Hero("Gayster", "GaySlayer")
-#print(hero.known_as())
-hero.take_damage(50)
-hero.take_healing(60)
-#print(hero.health)
+
+
 
 
