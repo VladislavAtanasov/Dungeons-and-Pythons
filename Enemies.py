@@ -1,9 +1,13 @@
+from Our_Hero import Spell, Weapon
+
 class Enemy(Weapon, Spell):
 
     def __init__(self, health, mana, damage):
         self.health = health
         self.mana = mana
         self.damage = damage
+        self.weapon = None
+        self.spell = None
 
     def is_alive(self):
         return self.health != 0
@@ -40,16 +44,16 @@ class Enemy(Weapon, Spell):
         self.damage = Weapon.damage
         return Weapon.damage
 
-    def learn(self, spell):
-        pass
+    def equip(self, weapon):
+        self.weapon = weapon
 
-    #def attack(self, by):
-    #    if by == "Weapon":
-    #        return self.equip(weapon)
-    #    elif by == "Magic":
-    #        return learn(spell)
+    def learn(self, spell):
+        self.spell = spell
+
+    def attack(self, by):
+        if by == "weapon":
+            return self.weapon.get_weapon_damage()
+        elif by == "spell":
+            return self.spell.get_spell_damage()
 
 enemy = Enemy(health=0, mana=100, damage=20)
-print(enemy.mana)
-print(enemy.take_mana(10))
-print(enemy.mana)

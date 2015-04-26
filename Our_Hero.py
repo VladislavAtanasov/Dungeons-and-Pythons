@@ -23,7 +23,7 @@ class Spell:
 
 class Our_Hero:
 
-    def __init__(self, name, title, health = 20, mana = 50, mana_regeneration_rate = 2):
+    def __init__(self, name, title, health = 100, mana = 50, mana_regeneration_rate = 2):
         self.name = name
         self.title = title
         self.health = health
@@ -48,9 +48,7 @@ class Our_Hero:
         return self.mana
 
     def can_cast(self):
-        if self.mana != 0:
-            return True
-        return False
+        return self.mana != 0
 
     def take_damage(self, damage_points):
         if self.health - damage_points > 0:
